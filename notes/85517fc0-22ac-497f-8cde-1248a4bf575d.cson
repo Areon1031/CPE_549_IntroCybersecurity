@@ -1,0 +1,93 @@
+createdAt: "2019-08-24T19:24:53.869Z"
+updatedAt: "2019-08-24T20:08:20.017Z"
+type: "MARKDOWN_NOTE"
+folder: "741758f4f4f2c83b702e"
+title: "Lecture 1 Notes: August 20, 2019"
+tags: []
+content: '''
+  Lecture 1 Notes: August 20, 2019
+  CPE 549 Intro to Cybersecurity
+  
+  Cybersecurity heat map
+      - Plethora of information on certifications and statistics based on geography
+  
+  Cybersecurity Ethics
+      - Cybersecurity:
+          - Protection of information (or data) at rest, in motion, and in use.
+      - The Ten Commandments of Computer Ethics
+          1.) Thou shalt not use a computer to harm other people.
+          2.) Thou shalt not interfere with other people's computer work.
+          3.) Thou shalt not snoop around in other people's computer files.
+          4.) Thou shalt not use a computer to steal.
+          5.) Thou shalt not use a computer to bear false witness.
+          6.) Thou shalt not copy or use proprietary software for which you have not paid.
+          7.) Thou shalt not use other people's computer resources without authorization or proper compensation
+          8.) Thou shalt not appropriate other people's intellectual output.
+          9.) Thou shalt think about the social consequences of the program you are writing or the system you are designing.
+          10.) Thou shalt always use a computer in ways that ensure consideration and respect for your fellow humans.
+      - ISC^2 Code of Ethics
+          - Protect society
+          - Act honorably
+          - Provide diligent services
+          - Advance and protect the profession
+      - General Considerations
+          - Who
+              - owns the information?
+              - can access the information?
+              - can change the information?
+              - can be harmed by compromising the information?
+      - Regulation of Information
+          - PCI - protects payment card information
+          - HIPAA - protects health care records
+          - FERPA - protects education records
+          - SOX - protects against fraud in accounting
+          - GLBA - protects financial information
+      - CIA Triad (The Pillars of Cybersecurity)
+          - Confidentiality
+              - The data is hidden, unreadable, or otherwise secret to unauthorized parties
+                  - Encrypted files and network traffic
+                  - Classification systems
+                  - Locked Safe
+          - Integrity
+              - The data can be proven to be unchanged by unauthorized parties
+                  - Hashing
+                  - Secure Logs
+                  - Email Signatures
+          - Availability
+              - The data should be reasonably available when it needs to be
+                  - Preprocessing
+                  - Load Balancingj
+                  - Security-functionality tradeoff
+  
+  Lecture 3 Password Security:
+      - Authentication
+          - Identify who (or what) is attempting to do something
+          - Verify Identity
+      - Use of one or more of the following:
+          - Something you know (a secret)
+          - Something you have (ex. your cellphone)
+          - Something you are (x. your finger print or retinal pattern)
+      - Two factor authentication
+          - Use two or more of the above
+      - Password files
+          - Are stored on systems in files
+          - Are a favorite target of hackers
+          - Generally need root or administrator privilege to access the password file.
+          - General format:
+              - username:h(x):salt:uid:...
+              - where h(x) is the hashed password
+          - Linux
+              - /etc/password (this is old)
+              - /etc/shadow (this is the new way to store passwords)
+      - Dictionary Attack
+          - Use well known passwords
+          - Use salt in plaintext 
+          - Generate Hash and compare
+  
+  FINISH:
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
