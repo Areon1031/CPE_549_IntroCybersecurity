@@ -1,0 +1,68 @@
+createdAt: "2019-08-26T21:27:57.048Z"
+updatedAt: "2019-08-26T22:10:02.045Z"
+type: "MARKDOWN_NOTE"
+folder: "741758f4f4f2c83b702e"
+title: "Lecture 2 Notes: August 26, 2019"
+tags: []
+content: '''
+  Lecture 2 Notes: August 26, 2019
+  CPE 549 Intro to Cybersecurity
+  
+  Password Security:
+  
+  Hash(password)
+      - Mathematical function 
+      - One way function
+  
+  Rainbow Table:
+      - Consist of many known passwords and their associated hashes
+  
+  Salt:
+      - Random value 
+      - Concatenated with password then hashed
+      - Stops creation of rainbow tables
+      - Created upon password change
+  
+  /etc/shadow (Linux password file) format
+      - username$hashAlgorithmCode$salt$passwordHash$...
+  
+  Dictionary Attacks:
+      - Apply known hashing algorithm with or without salt to a list of words
+      - Compare this new hash with the password hash under question
+  
+  Authentication
+      - Identify who (or what) is attempting to do something
+      - Verify Identity
+  Use of one or more of the following:
+      - Something you know (a secret)
+      - Something you have (ex. your cellphone)
+      - Something you are (x. your finger print or retinal pattern)
+  Two factor authentication
+      - Use two or more of the above
+  Password files
+      - Are stored on systems in files
+      - Are a favorite target of hackers
+      - Generally need root or administrator privilege to access the password file.
+      - General format:
+          - username:h(x):salt:uid:...
+          - where h(x) is the hashed password
+      - Linux
+          - /etc/password (this is old)
+          - /etc/shadow (this is the new way to store passwords)
+  Dictionary Attack
+      - Use well known passwords
+      - Use salt in plaintext 
+      - Generate Hash and compare
+  
+  Practice
+      - Create multiple accounts with different passwords
+      - Attack Linux box and extract /etc/shadow and crack these passwords
+  
+  Parallelize in Python:
+      - Look up how to run multiple threads in python
+  
+  Compare_hash function in python
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
