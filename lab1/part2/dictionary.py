@@ -45,7 +45,7 @@ try:
 
                     # Generate the hashed password and compare to the user hash
                     if (compare_hash(saltPass, crypt.crypt(word, saltPass))):
-                        print("[*] User:" + username + " password:" + word)
+                        print("[*] Match Found For UserID[" + username + "], Password = [" + word + "]")
                         break
                     # end if
                 # end for
