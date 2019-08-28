@@ -24,9 +24,13 @@ dictionary = sys.argv[2]
 try:
     print("[*] Starting Dictionary Attack")
     print("[*] Attacking shadowfile " + shadowFile + " with dictionary " + dictionary)
+
     # Extract user info from shadow file
     with open(shadowFile, 'r') as shadow:
         for line in shadow:
+            
+            # Flag to report unsuccesful attempt on current user
+            userPassCracked = False
 
             # Split the shadow entry 
             currEntry = line.split(':')
@@ -46,13 +50,18 @@ try:
                     # Generate the hashed password and compare to the user hash
                     if (compare_hash(saltPass, crypt.crypt(word, saltPass))):
                         print("[*] Match Found For UserID[" + username + "], Password = [" + word + "]")
+                        userPassCracked = True
                         break
                     # end if
                 # end for
             # end with
+
+            if (not userPassCracked):
+                print("[*] No match was found for UserID[" + username + "]")
         # end for
     # end with
     print("[*] Finished Dictionary Attack")
 except:
     print("ERROR OCCURED")
+    print("Check for empty lines in shadow file")
     print("Check Usage python3 dictionary.py shadowFile dictionary")
