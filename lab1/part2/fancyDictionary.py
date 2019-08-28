@@ -26,7 +26,7 @@ dictionary = sys.argv[2]
 
 # Banner
 shadowBanner = Figlet(font="tombstone")
-print(shadowBanner.renderText("$SHADOW KILLER$"))
+print(shadowBanner.renderText("SHADOW KILLER"))
 
 try:
     print("[*] Starting Dictionary Attack")
