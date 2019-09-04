@@ -6,7 +6,10 @@
 import sys
 
 # Hash library for MD4
-import hashlib, binascii
+import hashlib
+
+# Sorted Dictionary
+from sortedcontainers import SortedDict
 
 if (len(sys.argv) < 2):
     print("Usage: python3 hashtable.py passwords.txt")
@@ -18,11 +21,10 @@ def genNTLMHash(password):
 
 # Grab user file
 fileName = sys.argv[1]
-outFileName = sys.argv[1].split('.')[0] + "_NTLM.txt"
+outFileName = "rainbow_table.txt"
 
-# Containers
-passwords = []
-hashedPasswords = []
+# NTLM Hash Rainbow Table
+rainbow = SortedDict()
 
 # Read and Generate NTLM Hashes
 with open(fileName, 'r') as passFile:
@@ -32,14 +34,18 @@ with open(fileName, 'r') as passFile:
     
     # Generate Hash for each password in the file
     for line in lines:
-        passwords.append(line)
-        hashedPasswords.append(genNTLMHash(line))
+
+        # Strip whitespace from the line
+        line = line.strip()
+        rainbow[genNTLMHash(line)] = line
     # end for
 # end with
 
-# Write the Password : NTLM_Hash to file
+# Write the [NTLM_Hash]:[Password] to file
 with open(outFileName, 'w') as outFile:
-    for i in range(0, len(passwords)):
-        outFile.write(passwords[i] + " : " + str(hashedPasswords[i]) + '\n')
+    for hashedPassword,password in rainbow.items():
+        entry = "[" + hashedPassword + "]:[" + password + "]"
+        print(entry)
+        outFile.write(entry + "\n")
     # end for
 # end with
