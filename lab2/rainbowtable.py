@@ -1,7 +1,7 @@
 # CPE 549 Cybersecurity
 # Kyle Ray
-# Lab 2
-# September 3, 2019
+# Lab 1
+# August 20, 2019
 
 import sys
 
@@ -41,17 +41,11 @@ with open(fileName, 'r') as passFile:
     # end for
 # end with
 
-# Print the dictionary
-for hashedPassword, password in rainbow.items():
-    entry = "[" + hashedPassword + "]:[" + password + "]"
-    print(entry)
-# end for
-
-# # Write the [NTLM_Hash]:[Password] to file
-# with open(outFileName, 'w') as outFile:
-#     for hashedPassword,password in rainbow.items():
-#         entry = "[" + hashedPassword + "]:[" + password + "]"
-#         print(entry)
-#         outFile.write(entry + "\n")
-#     # end for
-# # end with
+# Write the [NTLM_Hash]:[Password] to file
+with open(outFileName, 'w') as outFile:
+    for hashedPassword,password in rainbow.items():
+        entry = "[" + hashedPassword + "]:[" + password + "]"
+        print(entry)
+        outFile.write(entry + "\n")
+    # end for
+# end with
