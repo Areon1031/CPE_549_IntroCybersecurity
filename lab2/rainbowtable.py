@@ -1,16 +1,14 @@
 # CPE 549 Cybersecurity
 # Kyle Ray
-# Lab 1
-# August 20, 2019
+# Lab 2
+# September 3, 2019
 
 import sys
 
 # Hash library for MD4
 import hashlib
 
-# Sorted Dictionary
-from sortedcontainers import SortedDict
-
+# Check user arguments
 if (len(sys.argv) < 2):
     print("Usage: python3 hashtable.py passwords.txt")
     sys.exit()
@@ -23,8 +21,8 @@ def genNTLMHash(password):
 fileName = sys.argv[1]
 outFileName = "rainbow_table.txt"
 
-# NTLM Hash Rainbow Table
-rainbow = SortedDict()
+# NTLM Hash Rainbow Table (Dictionary)
+rainbow = {}
 
 # Read and Generate NTLM Hashes
 with open(fileName, 'r') as passFile:
@@ -41,11 +39,8 @@ with open(fileName, 'r') as passFile:
     # end for
 # end with
 
-# Write the [NTLM_Hash]:[Password] to file
-with open(outFileName, 'w') as outFile:
-    for hashedPassword,password in rainbow.items():
-        entry = "[" + hashedPassword + "]:[" + password + "]"
-        print(entry)
-        outFile.write(entry + "\n")
-    # end for
-# end with
+# Print the dictionary
+for hashedPassword, password in sorted(rainbow.items()):
+    entry = "[" + hashedPassword + "]:[" + password + "]"
+    print(entry)
+# end for
