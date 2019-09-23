@@ -1,0 +1,144 @@
+createdAt: "2019-09-23T00:07:43.098Z"
+updatedAt: "2019-09-23T02:16:22.126Z"
+type: "MARKDOWN_NOTE"
+folder: "741758f4f4f2c83b702e"
+title: "Lecture 8 Notes: September 18, 2019"
+tags: []
+content: '''
+  Lecture 8 Notes: September 18, 2019
+  
+  One Time Pad: Perfect Encryption
+  
+  Avalanche Effect:
+      - Satisfied if:
+          - Small changes in input lead to large changes in output
+      - Applies to cryptographic hash and encryption
+  
+  Public Key Distribution:
+      - All principals generate a private key
+      - From the private key, compute a public key
+      - Exchange public keys
+      - Compute a message key from public key and their own private key
+      - Allows users to exchange a secure key over a non-secure channel (or network)
+  
+  Watch Diffie-Hellman Key Exchange Video on Youtube
+  
+  Pretty Good Privacy (PGP)
+      - Public key cryptography to encrypt/sign email and files
+      - Integrity MD5
+      - Authentication and Non-Repudiation: Digital Signature
+  
+  Secure Socket Layer (SSL)
+      - Encryption at the TCP/IP transport layer
+      - Used by more than just web browsers
+      - Confidentiality: Triple-DES, RC4
+      - Integrity: MD5, SHA-1
+      - Authentication: RSA, Diffie-Hellman
+      - Non-repudiation: Digital Signature
+  
+  DES
+      - Data encryption standard
+          - 64-bit block
+          - 56 bit key + 8 parity bits
+      - older
+      - Insecure due to the small amount of bits used
+  
+  Triple DES
+      - Apply DES 3 times on each block
+      - Key bundle is 3 56-bit keys
+      - Encrypt, Decrypt, Encrypt
+      - Keys must be different
+      - Considered Secure
+  
+  AES
+      - Advanced Encryption Standard
+      - Developed to replace DES
+      - Considered Secure
+      - Key size: 128, 192, and 256 bits
+      - Block size 128 bits
+      - Vulnerabilities
+          - So far so good
+          - AES was made the new encryption standard on May 26, 2002
+  
+  RSA
+      - Asymmetric Cipher
+      - Wide spread support in major web clients
+  
+  Elliptic Curve Cryptosystem (ECC)
+      - Asymmetric Encryption
+      - Cracking ECC generally means compromising poor implementations
+      - Created for non-pc non-server applications, like cell phones
+  
+  MAC - Message Authentication Codes
+      - Used to authenticate a message
+      - Message received is unchanged and set by party who shares encryption key
+      - For a secure unforgeable message authentication code, it should be computationally infeasible to compute a valid MAC of the given message without knowledge of the key
+      - MAC use a pre-shared key
+          - This means MAC do not provide non-repudiation property
+          - A pre-shared key is by definition accessible by more than one party
+      - The message shoulce include a nonce or time stamp to avoid replay attacks
+  
+  HMAC
+      - Hash based message authentication code
+  
+  Digital Signature
+      - Similar to MAC
+          - Adds identification/non-repudiation property
+      - Use public private key pair
+          - Sign with private key
+          - rest of world can validate with public key
+  
+  Padding
+      - Adding date to the beginning, middle, or end of a message prior to encryption
+      - Padding for size:
+          - Encryption is generally performed on fixed size blocks of plain text
+          - AES has 128-bit block. All input blocks must be 128-bits.  Use padding algorithms to increase size of smaller blocks
+      - Eliminates repetition
+          - Many messages follow a protocol and start and end the same way.  This repetition can be exploited by crypt analysts
+          - Network packes and many file formats have headers that are fairly constant
+          - Padding may also mask repetitive length.
+      - Length extension attacks extend messages but give valid hashes
+          - Padding can be used to make this practice impossible
+      - Byte Padding
+  
+  Initialization Vectors
+      - Is a fixed-size input to a cryptographic primitive that is typically required to be random or pseudorandom
+      - A basic requirement is uniqueness, which means that no IV may be reused under the same key
+          - Randomized IV:
+          - Stateful IV: Sender and receiver share the state IV
+      - IV Problems:
+          - The 802.11 encryption algorithm called WEP use a short, 24-bit IV, leading to reused IVs with the same key, which led to it being easily cracked
+          - Packet injection allowed for WEP to be cracking in times as short as several seconds.  This ultimately led to the deprecation of WEP
+  
+  Communication Protocols
+      - Network Protocols
+      - OSI Model
+          - A conceptual model composed of seven layers, each specifying a particular network function
+              - Application
+              - Presentation
+              - Session
+              - Transport
+              - Network
+              - Data Link
+              - Physical
+          - Each layer hides its implementation details from the layers below and above
+          - Each layer on the transmitting machine has a logical peer-to-peer connection with the corresponding layer in the receiving machine
+          - Application data is encapsulated by each successive layer until it is transmitted onto the physical medium
+  
+  TCP/IP Stack
+      - A suite of protocols for heterogenous network communication
+  
+  OSI: 
+      - Application -> Programs and Protocols
+      - Presentation -> HTTP, FTP, SMTP
+      - Session and Transport -> Transmission Control Protocol (TCP), User Datagram Protocol (UDP)
+      - Network -> Internet Protocol (IP)
+      - Data / Link -> Network Interface Cards
+      - Physical -> Transmission Media (COAX, Fiber Optic, Wireless)
+  
+  
+  
+'''
+linesHighlighted: []
+isStarred: false
+isTrashed: false
