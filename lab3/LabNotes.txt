@@ -1,0 +1,54 @@
+Lab Notes:
+Task 2:
+    - Encrypt the image with ECB
+        - Command Used: 
+        -    openssl enc -aes-128-ecb -e -in pic_original.bmp -out cipher.bin -K 00112233445566778899aabbccddeeff
+    - Changed the header in the encrypted file to be that of the bmp header
+        - 42 4D 8E D2 02 00 00 00 00 00 36 00 00 00 28 00 00 00 CC 01 00 00 86 00 00 00 01 00 18 00 00 00 00 00 58 D2 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF 
+    - Saved file as "pic_encrypt_ecb.bmp"
+
+    - Encrypt the image with CBC
+        - Command Used:
+            - openssl enc -aes-128-cbc -e -in pic_original.bmp -out cipher.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+    - Changed the header in the encrypted file to be that of the bmp header
+    - Saved file as "pic_encrypt_cbc.bmp"
+
+    - Questions
+    - 1.) Submit the encrypted photo (insert the photo in your lab report document) after replacing the header so that it is viewable in an image viewer
+        - Include the original, ecb, and cbc images in the lab report.
+    - 2.) Can you derive any useful information about the original picture from the encrypted picture? Please explain your observations.
+        - The image resulting from the Electronic Codebook (ECB) encryption still clearly shows each of the two shapes from the original image. Because the image is simple and there are not very many deviations in the data, the independent block encryption results in a similar looking image, with a little color distortion.
+        - However, the image resulting from the Code block Chaining (CBC) encryption seems to be more random and the original shapes are not viewable.
+
+Task 3:
+    - Created a message with the following 64 bytes (note the last character is the null terminator, quotes not included)
+        - "I want to encrypt this special message, then get it back again."
+    - Performed the following commands to get each aes-128 encrypted output
+        - openssl enc -aes-128-ecb -e -in Message.txt -out Message_encrypt_ecb.bin -K 00112233445566778899aabbccddeeff
+        - openssl enc -aes-128-cbc -e -in Message.txt -out Message_encrypt_cbc.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+        - openssl enc -aes-128-cfb -e -in Message.txt -out Message_encrypt_cfb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+        - openssl enc -aes-128-ofb -e -in Message.txt -out Message_encrypt_ofb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+    - Performed the decryption on the originals to confirm that the message was retrievable 
+        - openssl enc -aes-128-ecb -d -in Message_encrypt_ecb.bin -K 00112233445566778899aabbccddeeff
+        - openssl enc -aes-128-cbc -d -in Message_encrypt_cbc.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+        - openssl enc -aes-128-cfb -d -in Message_encrypt_cfb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+        - openssl enc -aes-128-ofb -d -in Message_encrypt_ofb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+    - Corrupted the binary via the following rules
+        - Message_encrypt_ecb.bin 
+            - Changed byte 4 from 0x70 to 0x71
+        - Message encrypt_cbc.bin
+            - Changed byte 7 from 0x81 to 0x80
+        - Message_encrypt_cfb.bin
+            - Changed byte 4 from 0x1B to 0x0B
+        - Message_encrypt_ofb.bin
+            - Changed byte 4 from 0x1B to 0x0B
+    - Performed the decryption after corruption and got the following output
+        - ECB
+            - �L��0�L��t this special message, then get it back again.
+        - CBC
+            �S��#
+            �6#<��Ot this rpecial message, then get it back again.
+        - CFB
+            - I wa~t to encryp���a�=���?܆&essage, then get it back again.
+        - OFB
+            - I wa~t to encrypt this special message, then get it back again.
