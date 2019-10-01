@@ -21,34 +21,33 @@ Task 2:
         - However, the image resulting from the Code block Chaining (CBC) encryption seems to be more random and the original shapes are not viewable.
 
 Task 3:
-    - Created a message with the following 64 bytes (note the last character is the null terminator, quotes not included)
-        - "I want to encrypt this special message, then get it back again."
+    - Created a message with the following 70 bytes (note the last character is the null terminator, quotes not included)
+        - Encryption and Decryption are very useful tools when protecting data.
     - Performed the following commands to get each aes-128 encrypted output
         - openssl enc -aes-128-ecb -e -in Message.txt -out Message_encrypt_ecb.bin -K 00112233445566778899aabbccddeeff
         - openssl enc -aes-128-cbc -e -in Message.txt -out Message_encrypt_cbc.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
         - openssl enc -aes-128-cfb -e -in Message.txt -out Message_encrypt_cfb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
         - openssl enc -aes-128-ofb -e -in Message.txt -out Message_encrypt_ofb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
     - Performed the decryption on the originals to confirm that the message was retrievable 
-        - openssl enc -aes-128-ecb -d -in Message_encrypt_ecb.bin -K 00112233445566778899aabbccddeeff
-        - openssl enc -aes-128-cbc -d -in Message_encrypt_cbc.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
-        - openssl enc -aes-128-cfb -d -in Message_encrypt_cfb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
-        - openssl enc -aes-128-ofb -d -in Message_encrypt_ofb.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+        - openssl enc -aes-128-ecb -d -in Message_encrypt_ecb_corrupted.bin -out Message_decrypt_ecb_corrupted.txt -K 00112233445566778899aabbccddeeff
+        - openssl enc -aes-128-cbc -d -in Message_encrypt_cbc_corrupted.bin -out Message_decrypt_cbc_corrupted.txt -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+        - openssl enc -aes-128-cfb -d -in Message_encrypt_cfb_corrupted.bin -out Message_decrypt_cfb_corrupted.txt -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+        - openssl enc -aes-128-ofb -d -in Message_encrypt_ofb_corrupted.bin -out Message_decrypt_ofb_corrupted.txt -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
     - Corrupted the binary via the following rules
         - Message_encrypt_ecb.bin 
-            - Changed byte 4 from 0x70 to 0x71
+            - Changed byte 0 from 0xE2 to 0xF2
         - Message encrypt_cbc.bin
-            - Changed byte 7 from 0x81 to 0x80
+            - Changed byte 0 from 0x0F to 0x1F
         - Message_encrypt_cfb.bin
-            - Changed byte 4 from 0x1B to 0x0B
+            - Changed byte 0 from 0x62 to 0x72
         - Message_encrypt_ofb.bin
-            - Changed byte 4 from 0x1B to 0x0B
+            - Changed byte 0 from 0x62 to 0x72
     - Performed the decryption after corruption and got the following output
         - ECB
-            - �L��0�L��t this special message, then get it back again.
+            - ��1xq�⿻�-ecryption are very useful tools when protecting data.
         - CBC
-            �S��#
-            �6#<��Ot this rpecial message, then get it back again.
+            - a�uC�b�)���,�az"ucryption are very useful tools when protecting data.
         - CFB
-            - I wa~t to encryp���a�=���?܆&essage, then get it back again.
+            - Uncryption and D����v�هCIg�M6Kry useful tools when protecting data.
         - OFB
-            - I wa~t to encrypt this special message, then get it back again.
+            - Uncryption and Decryption are very useful tools when protecting data.
