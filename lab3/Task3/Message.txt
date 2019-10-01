@@ -1,1 +1,1 @@
-Encryption and Decryption are very useful tools when protecting data.
+Encryption and Decryption are very useful tools for protecting data.

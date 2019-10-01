@@ -2,14 +2,14 @@ Lab Notes:
 Task 2:
     - Encrypt the image with ECB
         - Command Used: 
-        -    openssl enc -aes-128-ecb -e -in pic_original.bmp -out cipher.bin -K 00112233445566778899aabbccddeeff
+        -    openssl enc -aes-128-ecb -e -in pic_original.bmp -out encrpyted_image_ecb.bin -K 00112233445566778899aabbccddeeff
     - Changed the header in the encrypted file to be that of the bmp header
         - 42 4D 8E D2 02 00 00 00 00 00 36 00 00 00 28 00 00 00 CC 01 00 00 86 00 00 00 01 00 18 00 00 00 00 00 58 D2 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF 
     - Saved file as "pic_encrypt_ecb.bmp"
 
     - Encrypt the image with CBC
         - Command Used:
-            - openssl enc -aes-128-cbc -e -in pic_original.bmp -out cipher.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
+            - openssl enc -aes-128-cbc -e -in pic_original.bmp -out encrypted_image_cbc.bin -K 00112233445566778899aabbccddeeff -iv 000102030405060708090a0b0c0d0e0f
     - Changed the header in the encrypted file to be that of the bmp header
     - Saved file as "pic_encrypt_cbc.bmp"
 
@@ -44,10 +44,10 @@ Task 3:
             - Changed byte 0 from 0x62 to 0x72
     - Performed the decryption after corruption and got the following output
         - ECB
-            - ��1xq�⿻�-ecryption are very useful tools when protecting data.
+            - ��1xq�⿻�-ecryption are very useful tools for protecting data.
         - CBC
-            - a�uC�b�)���,�az"ucryption are very useful tools when protecting data.
+            - a�uC�b�)���,�az"ucryption are very useful tools for protecting data.
         - CFB
-            - Uncryption and D����v�هCIg�M6Kry useful tools when protecting data.
+            - Uncryption and D����v�هCIg�M6Kry useful tools for protecting data.
         - OFB
-            - Uncryption and Decryption are very useful tools when protecting data.
+            - Uncryption and Decryption are very useful tools for protecting data.
