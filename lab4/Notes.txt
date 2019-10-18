@@ -1,0 +1,22 @@
+Part1:
+    1.) How many IP packets are in the file? 3355
+        a.) "ip"
+        b.) "!ip", can also use "not ip"
+        c.) Two ARP packets
+    2.) Find the IP address of the scanner (192.168.1.100)
+        a.) tcp.flags.syn == 1
+        b.) tcp.flags.ack == 0
+        c.) tcp.flags.syn == 1 and tcp.flags.ack == 0
+    3.) How many open ports were found by the scanner? 6
+        a.) tcp.flags.syn == 1 and tcp.flags.ack == 1
+        b.) same as a
+
+Part2:
+    1.) What is the IP address of the scanner? (192.168.1.103)
+    2.) "tcp.flags.push == 1 or tcp.flags.fin == 1 or tcp.flags.urg == 1)
+        a.) "tcp.flags.push and tcp.flags.fin and tcp.flags.urg) does not work
+        b.) "tcp.flags.push == 1 and tcp.flags.fin == 1 and tcp.flags.urg == 1)
+        c.) 1668 packets
+
+Part3:
+    1.) 
