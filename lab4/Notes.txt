@@ -19,4 +19,75 @@ Part2:
         c.) 1668 packets
 
 Part3:
-    1.) 
+    1.) Write a filter to display all DNS packets.  For most (or all protocols) typing the acronym for the protocol in the filter box will provide a filter to display only those packets.
+        a.) How many DNS packets are present? - 24 packets
+        b.) Filter to show only DNS responses.
+            - dns.flags.response == 1
+            - 12 packets
+        c.) Filter to display only DNS response from gstatic.com query
+            - dns.flags.response == 1 and dns.qry.name contains gstatic.com
+        d.) What is the ip of gstatic.com server?
+            - 216.239.32.10
+        e.) Use Whois Registry to find street address for the ip from d.
+            - 1600 Amphitheatre Parkway Mountain View, California 94043
+    2.) Write a filter to display all TLSv1.2 packets
+        a.) 
+        b.) ssl.record.version == 0x0303
+        c.) 68 packets
+
+NICE CHALLENGE SECTION
+    Documentation Portion
+        1.) 10.7.pcap
+            - Attacker using a virtual machine to arp storm the server to map out destinations.
+            - Use filter
+                - arp and arp.src.proto_ipv4 == 172.16.30.109
+                - 4576 packets sent
+                - 70 packets sent to 172.16.30.109 directly
+                - 6 ARP packets
+                - range of packets = 41 - 6670
+        2.) 20.0.pcap
+            - Attacker using a virtual machine to arp storm the server again.  Attacker is also port scanning 172.16.20.2.
+                - arp and arp.src.proto_opv4 == 172.16.30.109
+                - 4576 packets sent
+                - 2122 packets sent directly to 172.16.30.109 
+                - 6 ARP packets
+                - range of packets = 77 - 8801
+        3.) 30.21.pcap
+            - Attacker using a virtual machine to arp storm the server again.
+                - arp and arp.src.proto_ipv4 == 172.16.30.109
+                - 4578 packets sent
+                - 7 sent back
+                - range of packets = 963 - 8186
+    Extra Questions
+        1.) What is the IP address of the database server?
+            - 172.16.20.4
+        2.) For each pcap file analyzed, provide a 1 sentence description of each major action performed by the attacker.
+            - 10.7.pcap - The attacker is performing an arp storm and a port scan on target ip 172.16.10.7.
+            - 20.0.pcap - The attacker is performing an ARP scan and a port scan on target ip 172.16.30.2.
+            - 30.21.pcap - The attacker is performing an ARP scan, port scan on target ip 172.16.20.21, as well as some ssh attack on 172.16.20.21.
+        3.) How many total packets were sent by the attacker? (6587 + 6578 + 6839 = 20004)
+            - 10.7.pcap: (ip.src == 172.16.30.109 or arp.src.proto_ipv4 == 172.16.30.109)
+                - Sent: (6587)
+                    - 2011 TCP/ICMP packets
+                    - 4576 ARP packets
+            - 20.0.pcap: (ip.src == 172.16.30.109 or arp.src.proto_ipv4 == 172.16.30.109)
+                - Sent: (6578)
+                    - 2002 TCP/ICMP packets
+                    - 4576 ARP packets
+            - 30.21.pcap: (ip.src == 172.16.30.109 or arp.src.proto_ipv4 == 172.16.30.109)
+                - Sent: (6839)
+                    - 2261 TCP/ICMP packets
+                    - 4578 ARP packets
+        4.) How many total packets were sent to the attacker? (76 + 2128 + 381 = 2585)
+            - 10.7.pcap: (ip.dst == 172.16.30.109 or arp.dst.proto_ipv4 == 172.16.30.109)
+                - Received (76)
+                    - 70 TCP/ICMP packets
+                    - 6 ARP packets
+            - 20.0.pcap: (ip.dst == 172.16.30.109 or arp.dst.proto_ipv4 == 172.16.30.109)
+                - Received: (2128)
+                    - 2122 TCP/ICMP packets
+                    - 6 ARP packets
+            - 30.21.pcap: (ip.dst == 172.16.30.109 or arp.dst.proto_ipv4 == 172.16.30.109)
+                - Received: (381)
+                    - 373 TCP/ICMP packets
+                    - 8 ARP packets
