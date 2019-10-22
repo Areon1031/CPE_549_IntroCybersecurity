@@ -1,84 +1,106 @@
+# Kyle Ray
+# CPE 549 Intro to Cybersecurity
+# Wireshark Exercise
+# October 21, 2019
+
 Part1:
-    1.) How many IP packets are in the file? 3355
-        a.) "ip"
-        b.) "!ip", can also use "not ip"
+    1.) How many non-IP packets are in the file?
+        a.) ip
+        b.) !ip, can also use not ip
         c.) Two ARP packets
-    2.) Find the IP address of the scanner (192.168.1.100)
+
+    2.) Find the IP address of the scanner.
         a.) tcp.flags.syn == 1
         b.) tcp.flags.ack == 0
         c.) tcp.flags.syn == 1 and tcp.flags.ack == 0
-    3.) How many open ports were found by the scanner? 6
-        a.) tcp.flags.syn == 1 and tcp.flags.ack == 1
-        b.) same as a
+        - IP Address of the scanner = (192.168.1.100)
+
+    3.) How many open ports were found by the scanner?
+        a. and b.) tcp.flags.syn == 1 and tcp.flags.ack == 1
+        - 6 open ports were found by the scanner
 
 Part2:
-    1.) What is the IP address of the scanner? (192.168.1.103)
-    2.) "tcp.flags.push == 1 or tcp.flags.fin == 1 or tcp.flags.urg == 1)
-        a.) "tcp.flags.push and tcp.flags.fin and tcp.flags.urg) does not work
-        b.) "tcp.flags.push == 1 and tcp.flags.fin == 1 and tcp.flags.urg == 1)
-        c.) 1668 packets
+    1.) What is the IP address of the scanner?
+        - IP Address of the scanner = (192.168.1.103)
+
+    2.) Analyze Christmas Scan
+        a.) tcp.flags.push and tcp.flags.fin and tcp.flags.urg
+            - This filter does not work as it doesn't check the state of the flag only its existence 
+        b.) tcp.flags.push == 1 and tcp.flags.fin == 1 and tcp.flags.urg == 1
+        c.) 1668 packets have these flags asserted
 
 Part3:
-    1.) Write a filter to display all DNS packets.  For most (or all protocols) typing the acronym for the protocol in the filter box will provide a filter to display only those packets.
-        a.) How many DNS packets are present? - 24 packets
+    1.) Write a filter to display all DNS packets.
+        a.) How many DNS packets are present? 
+            - There are 24 DNS packets.
         b.) Filter to show only DNS responses.
             - dns.flags.response == 1
-            - 12 packets
+            - There are 12 DNS response packets.
         c.) Filter to display only DNS response from gstatic.com query
-            - dns.flags.response == 1 and dns.qry.name contains gstatic.com
+            - dns.flags.response == 1 and dns.qry.name contains www.gstatic.com
         d.) What is the ip of gstatic.com server?
-            - 216.239.32.10
+            - 172.217.4.3
         e.) Use Whois Registry to find street address for the ip from d.
             - 1600 Amphitheatre Parkway Mountain View, California 94043
+            
     2.) Write a filter to display all TLSv1.2 packets
-        a.) 
         b.) ssl.record.version == 0x0303
-        c.) 68 packets
+        c.) There are 68 TLSv1.2 packets.
 
 NICE CHALLENGE SECTION
     Documentation Portion
         1.) 10.7.pcap
-            - Attacker using a virtual machine to arp storm the server to map out destinations.
-            - Use filter
-                - arp and arp.src.proto_ipv4 == 172.16.30.109
-                - 4576 packets sent
-                - 70 packets sent to 172.16.30.109 directly
-                - 6 ARP packets
-                - range of packets = 41 - 6670
+            - Attacker performed an ARP scan from IP address 172.16.30.109.  Also, a port scan on target machine 172.16.10.7.
+            - Use filter for arp scan: arp and arp.src.proto_ipv4 == 172.16.30.109
+                - 4576 ARP packets sent from attacker
+                - 6 ARP packets sent to attacker
+            - Performed port scan on machine 172.16.10.7
+                - 1965 TCP packets sent from attacker
+                - 70 TCP packets sent to attacker
+            - range of packets = 41-6670
         2.) 20.0.pcap
-            - Attacker using a virtual machine to arp storm the server again.  Attacker is also port scanning 172.16.20.2.
-                - arp and arp.src.proto_opv4 == 172.16.30.109
-                - 4576 packets sent
-                - 2122 packets sent directly to 172.16.30.109 
-                - 6 ARP packets
-                - range of packets = 77 - 8801
+            - Attacker performed an ARP scan from IP address 172.16.30.109.  Also, a port scan on target machine 172.16.20.2.
+            - Use filter for arp scan: arp and arp.src.proto_opv4 == 172.16.30.109
+                - 4576 ARP packets sent from attacker
+                - 6 ARP packets received
+            - Performed port scan on machine 172.16.30.2
+                - 2002 TCP packets sent from attacker
+                - 2122 TCP packets sent to attacker 
+            - range of packets = 77-8801
         3.) 30.21.pcap
-            - Attacker using a virtual machine to arp storm the server again.
-                - arp and arp.src.proto_ipv4 == 172.16.30.109
-                - 4578 packets sent
-                - 7 sent back
-                - range of packets = 963 - 8186
+            - Attacker performed an ARP scan from IP address 172.16.30.109.  Also, a port scan and an ssh session on target machine 172.16.20.21.
+            - Use filter for arp scan: arp and arp.src.proto_ipv4 == 172.16.30.109
+                - 4578 ARP packets sent from attacker
+                - 8 ARP packets sent to attacker
+            - Performed port scan and ssh session on machine 172.16.20.21
+                - 2215 TCP packets sent from attacker
+                - 373 TCP packets sent to attacker
+            - range of packets = 963-8186
+
     Extra Questions
         1.) What is the IP address of the database server?
             - 172.16.20.4
+
         2.) For each pcap file analyzed, provide a 1 sentence description of each major action performed by the attacker.
-            - 10.7.pcap - The attacker is performing an arp storm and a port scan on target ip 172.16.10.7.
-            - 20.0.pcap - The attacker is performing an ARP scan and a port scan on target ip 172.16.30.2.
-            - 30.21.pcap - The attacker is performing an ARP scan, port scan on target ip 172.16.20.21, as well as some ssh attack on 172.16.20.21.
-        3.) How many total packets were sent by the attacker? (6587 + 6578 + 6839 = 20004)
-            - 10.7.pcap: (ip.src == 172.16.30.109 or arp.src.proto_ipv4 == 172.16.30.109)
+            - 10.7.pcap - The attacker performed an ARP scan on 172.16.10.x. Then performed a port scan on target ip 172.16.10.7.
+            - 20.0.pcap - The attacker performed an ARP scan on 172.16.10.x. Then performed a port scan on target ip 172.16.30.2.
+            - 30.21.pcap - The attacker performed an ARP scan on 172.16.10.x. Then performed a port scan on target ip 172.16.30.21. Finally, initiated an ssh session on target ip 172.16.20.21.
+
+        3.) How many total packets were sent by the attacker? (6587 + 6578 + 6793 = 19958 total packets sent)
+            - 10.7.pcap: ((ip.src == 172.16.30.109 and not icmp) or arp.src.proto_ipv4 == 172.16.30.109)
                 - Sent: (6587)
-                    - 2011 TCP/ICMP packets
+                    - 1965 TCP
                     - 4576 ARP packets
             - 20.0.pcap: (ip.src == 172.16.30.109 or arp.src.proto_ipv4 == 172.16.30.109)
                 - Sent: (6578)
-                    - 2002 TCP/ICMP packets
+                    - 2002 TCP
                     - 4576 ARP packets
-            - 30.21.pcap: (ip.src == 172.16.30.109 or arp.src.proto_ipv4 == 172.16.30.109)
-                - Sent: (6839)
-                    - 2261 TCP/ICMP packets
+            - 30.21.pcap: ((ip.src == 172.16.30.109 and not icmp) or arp.src.proto_ipv4 == 172.16.30.109)
+                - Sent: (6793)
+                    - 2215 TCP
                     - 4578 ARP packets
-        4.) How many total packets were sent to the attacker? (76 + 2128 + 381 = 2585)
+
+        4.) How many total packets were sent to the attacker? (76 + 2128 + 381 = 2585 total packets received)
             - 10.7.pcap: (ip.dst == 172.16.30.109 or arp.dst.proto_ipv4 == 172.16.30.109)
                 - Received (76)
                     - 70 TCP/ICMP packets
