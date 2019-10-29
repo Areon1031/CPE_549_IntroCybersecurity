@@ -56,5 +56,5 @@ for country in countryAndCount.keys():
     for innerCountry in ipAndCountry.values():
         if (country == innerCountry):
             cnt += 1
-    print(str(cnt) + " unique IP address(es) were found from " + str(country))
+    print(str(cnt) + " unique IP address(es) were found from " + str(country) + ".")
     cnt = 0
