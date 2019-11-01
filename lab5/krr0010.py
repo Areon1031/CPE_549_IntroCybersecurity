@@ -35,7 +35,7 @@ with open(loginFile, 'r') as inputFile:
             ipAndCount[ipAddr] += 1
 
         # Grab the country of origin
-        country = geoObj.country_name_by_addr(line.split()[2])
+        country = geoObj.country_name_by_addr(ipAddr)
         if (not countryAndCount.__contains__(country)):
             countryAndCount[country] = 1
         else:
@@ -50,7 +50,7 @@ print(str(len(ipAndCount.keys())) + " unique IP addresses were found.")
 for ip, cnt in ipAndCount.items():
     print(str(ip) + " is from " + str(ipAndCountry[ip]) + " and was found " + str(cnt) + " time(s).")
 
-# Optimize this, I don't like the way I have the summation code
+# Print the number of unique IP addresses per country
 cnt = 0
 for country in countryAndCount.keys():
     for innerCountry in ipAndCountry.values():
