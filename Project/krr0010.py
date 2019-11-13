@@ -7,25 +7,19 @@ import dpkt
 import socket
 import sys
 
-from enum import Enum
-
-class PacketType:
-    NONE = 0
-    TCP_SYN = 1
-    TCP_ACK = 2
-    TCP_RST = 3
-    TCP_FIN = 4
-    TCP_PUSH = 5
-    TCP_URG = 6
-    TCP_ECE = 7
-    TCP_CWR = 8
-
 class PacketInfo:
-    def __init__(self):
-        self.begin_time_s = 0.0
-        self.current_time_s = 0.0
-        self.packet_count = 0
-        self.packet_type = PacketType.NONE
+    def __init__(self, ip, dest_ip):
+        self.ip = ip
+        self.dest_ip = dest_ip
+        self.time = []
+        self.sport = []
+        self.dport = []
+        self.flag = []
+        self.xmas = 0
+        self.null = 0
+        self.half_open = 0
+        self.connect = 0
+        self.udp = 0
 
 class Scan:
     def __init__(self, packet_count, time_thresh):
@@ -107,6 +101,9 @@ num_packet_for_trigger = 10 # 10 packets within time thresh to trigger
 time_thresh_for_trigger = 1 # 1 second is time threshold to trigger 
 
 class Scan_Detector:
+    tcp_packets = [] # List of tcp packets of type PacketInfo
+    udp_packets = [] # List of udp packets of type PacketInfo
+
     def __init__(self, pcap_file):
         self.connect_scan = Connect_Scan(num_packet_for_trigger, time_thresh_for_trigger)
         self.half_open_scan = Half_Open_Scan(num_packet_for_trigger, time_thresh_for_trigger)
