@@ -25,20 +25,35 @@ class Scan:
     def __init__(self, packet_count, time_thresh):
         self.packet_count = packet_count
         self.time_thresh = time_thresh
-
-    start_time_s = 0.0
-    delta_time_s = 0.0
-    curr_time_s = 0.0
-    scan_packet_count = 0
-    ipAndPacket = {} # Key = ip address, Value = PacketInfo
-    unique_ports = []
+        self.start_time_s = 0.0
+        self.delta_time_s = 0.0
+        self.curr_time_s = 0.0
+        self.scan_packet_count = 0
+        self.ipAndPacket = {} # Key = ip address, Value = PacketInfo
+        self.unique_ports = []
 
 class Connect_Scan(Scan):
-    def __init__(self, packet_count, time_thresh):
-        Scan.__init__(self, packet_count, time_thresh)
-    
-    def process(self, packet):
-        dummy = 42
+    def process(self, packets):
+        for packet in packets:
+            if ((packet.flag & dpkt.tcp.TH_SYN)):
+                if (packet.ip not in self.ipAndPacket):
+                    self.ipAndPacket[packet.ip] = [packet]
+                else:
+                    self.ipAndPacket[packet.ip].append(packet)
+        for ip in self.ipAndPacket:
+            startTime = self.ipAndPacket[ip][0].time
+            print("IP: " + str(ip) + " Packet start = " + str(startTime))
+            deltaTime = 0.0
+            ports = 0
+            for packet in self.ipAndPacket[ip]:
+                #tally up and if more than threshold then detect scan
+                if (packet.time - startTime > 0):
+                    deltaTime = packet.time - startTime
+                    ports += 1
+                    print("Delta time = " + str(deltaTime) + " and " + str(ports) + " scanned")
+                    if (deltaTime < time_thresh_for_trigger and ports > self.packet_count):
+                        print("Scan Detected")
+
         # Process packet for a connect scan
         # Look for TCP.SYN packets from each IP
         # Check against threshold
@@ -47,29 +62,24 @@ class Connect_Scan(Scan):
         return "Connect: " + str(len(self.ipAndPacket))
 
 class Half_Open_Scan(Scan):
-    def __init__(self, packet_count, time_thresh):
-        Scan.__init__(self, packet_count, time_thresh)
-
     def to_string(self):
         return "Half-open: " + str(len(self.ipAndPacket))
     
     def process(self, packet):
         dummy = 42
         # Process packet for half-open connect scan
+        # Look for TCP.SYN packets from each IP
         # Check against threshold
+        # If possible scan, check if attacker sends reset for an open port
 
 class Null_Scan(Scan):
-    def __init__(self, packet_count, time_thresh):
-        Scan.__init__(self, packet_count, time_thresh)
-
     def to_string(self):
-        return "Null: " + str(len(self.unique_ports))
+        return "Null: Ports " + str(len(self.unique_ports)) + " with " + str(self.scan_packet_count) + " packets."
 
     def process(self, packets):
         # Process packet for null scan
-        # Check against threshold
+        # Check for no flags in the packet (Illegal)
         for packet in packets:
-            #print("Length of flags in packet = " + str(len(packet.flag)))
             if (packet.flag == 0):
                 self.scan_packet_count += 1
                 if (packet.dport not in self.unique_ports):
@@ -77,9 +87,6 @@ class Null_Scan(Scan):
 
 
 class UDP_Scan(Scan):
-    def __init__(self, packet_count, time_thresh):
-        Scan.__init__(self, packet_count, time_thresh)
-
     def to_string(self):
         return "UDP: " + str(len(self.ipAndPacket))
 
@@ -89,11 +96,8 @@ class UDP_Scan(Scan):
         # Check against threshold
 
 class XMAS_Scan(Scan):
-    def __init__(self, packet_count, time_thresh):
-        Scan.__init__(self, packet_count, time_thresh)
-
     def to_string(self):
-        return "XMAS: " + str(len(self.unique_ports))
+        return "XMAS: Ports " + str(len(self.unique_ports)) + " with " + str(self.scan_packet_count) + " packets."
 
     def process(self, packets):
         # Process the packet for xmas scan
@@ -152,6 +156,8 @@ class Scan_Detector:
                     self.tcp_packets.append(PacketInfo(tcp.sport, tcp.dport))
                     self.tcp_packets[tcp_packet_cnt].flag = tcp.flags
                     self.tcp_packets[tcp_packet_cnt].time = ts
+                    self.tcp_packets[tcp_packet_cnt].ip = socket.inet_ntoa(ip.src)
+                    self.tcp_packets[tcp_packet_cnt].dest_ip = socket.inet_ntoa(ip.dst)
                     tcp_packet_cnt += 1
                 elif (isinstance(ip.data, dpkt.udp.UDP)):
                     udp = ip.data
@@ -173,15 +179,6 @@ class Scan_Detector:
         print(self.connect_scan.to_string())
         print("Number of TCP packets: " + str(len(self.tcp_packets)))
         print("Number of UDP packets: " + str(len(self.udp_packets)))
-
-
-    def update(self, packet):
-        self.connect_scan.update(packet)
-        self.half_open_scan.update(packet)
-        self.null_scan.update(packet)
-        self.udp_scan.update(packet)
-        self.xmas_scan.update(packet)
-
 
 def main():
     # Check user arguments
