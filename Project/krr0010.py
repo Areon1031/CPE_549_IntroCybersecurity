@@ -25,26 +25,25 @@ class Scan:
     def __init__(self, port_count, time_thresh):
         self.port_count = port_count
         self.time_thresh = time_thresh
-        self.start_time_s = 0.0
-        self.delta_time_s = 0.0
-        self.curr_time_s = 0.0
         self.scan_packet_count = 0
         self.ipAndPacket = {} # Key = ip address, Value = PacketInfo
 
         self.ipAndPort = {} # Key = ip address, Value = unique ports
+        self.ipAndOpenPort = {} # Key = ip address, Value = open ports
         self.unique_ports = [] # IP agnostic port list (Null, XMAS)
 
 class Connect_Scan(Scan):
     def __init__(self, port_count, time_thresh):
         Scan.__init__(self, port_count, time_thresh)
         self.possible_attacker = []
+        self.open_port = []
 
     # Read the packets and categorize any packets with SYN flag sent
     def process(self, packets):
         # Loop through the packets from the capture
         for packet in packets:
             # If the packet contains a SYN flag, take note of the IP
-            if ((packet.flag & dpkt.tcp.TH_SYN)):
+            if ((packet.flag & (dpkt.tcp.TH_SYN | dpkt.tcp.TH_ACK)) != 0):
                 # If the ip is not in the dictionary then add it and the packet
                 if (packet.ip not in self.ipAndPacket):
                     self.ipAndPacket[packet.ip] = [packet]
@@ -70,25 +69,50 @@ class Connect_Scan(Scan):
                 # Calculate the delta time from the last packet
                 if (packet.time - startTime > 0):
                     deltaTime = packet.time - startTime
-                    #print("Curr destination port = " + str(packet.dport))
-                    if (packet.dport != curr_dst_port):
-                        ports += 1
-                        if (packet.dport not in self.ipAndPort[ip]):
-                            self.ipAndPort[ip].append(packet.dport)
-                    #print("Delta time = " + str(deltaTime) + " and " + str(ports) + " scanned")
+                    if (packet.flag == 2): # SYN Packet
+                        if (packet.dport != curr_dst_port):
+                            ports += 1
+                            if (packet.dport not in self.ipAndPort[ip]):
+                                self.ipAndPort[ip].append(packet.dport)
+                            # end if
+                        # end if
 
-                    # if time difference is within the threshold and number of ports pinged is greater than the threshold
-                    # then this is probably a scan
-                    if (deltaTime < self.time_thresh and ports > self.port_count):
-                        #print("Scan Detected")
-                        if (ip not in self.possible_attacker):
-                            self.possible_attacker.append(ip)
-                    # Reset the time interval, port count, and the current destination port
-                    elif (deltaTime > self.time_thresh):
-                        startTime = packet.time
-                        deltaTime = 0.0
-                        ports = 0
-                        curr_dst_port = packet.dport
+                        # if time difference is within the threshold and number of ports pinged is greater than the threshold
+                        # then this is probably a scan
+                        if (deltaTime < self.time_thresh and ports > self.port_count):
+                            #print("Scan Detected")
+                            if (ip not in self.possible_attacker):
+                                self.possible_attacker.append(ip)
+                            # end if
+                        # Reset the time interval, port count, and the current destination port
+                        elif (deltaTime > self.time_thresh):
+                            startTime = packet.time
+                            deltaTime = 0.0
+                            ports = 0
+                            curr_dst_port = packet.dport
+                        # end if
+                    elif (packet.flag == 18): # SYN-ACK
+                        if (ip not in self.ipAndOpenPort):
+                            self.ipAndOpenPort[ip] = [packet.sport]
+                        elif (packet.sport not in self.ipAndOpenPort[ip]):
+                            self.ipAndOpenPort[ip].append(packet.sport)
+                        #endif
+                    # end if
+                # end if
+            # end for
+        # end for
+
+        # Check if any possible attackers tried to send an ACK back for a SYN_ACK on any open ports
+        for ip in self.ipAndPacket:
+            for packet in self.ipAndPacket[ip]:
+                if (packet.ip in self.possible_attacker):
+                    if (packet.flag == 16): # ACK packet
+                        for ip, openPorts in self.ipAndOpenPort.items():
+                            if (packet.dest_ip == ip):
+                                for openPort in openPorts:
+                                    if (packet.dport == openPort):
+                                        print("Attacker " + str(packet.ip) + ":" + str(packet.sport) + " performed connect scan on " + str(ip) + ":" + str(packet.dport) + "\n")
+
 
         # Process packet for a connect scan
         # Look for TCP.SYN packets from each IP
@@ -97,7 +121,10 @@ class Connect_Scan(Scan):
     def to_string(self):
         out = "Connect: " + str(len(self.possible_attacker)) + " attacker(s)\n"
         for attacker in self.possible_attacker:
-            out += "\t" + str(attacker) + " scanned " + str(len(self.ipAndPort[attacker])) + " port(s)"
+            out += "\t" + str(attacker) + " scanned " + str(len(self.ipAndPort[attacker])) + " port(s)\n"
+        for ip, openPorts in self.ipAndOpenPort.items():
+            for openPort in openPorts:
+                out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
         return out
 
 class Half_Open_Scan(Scan):
