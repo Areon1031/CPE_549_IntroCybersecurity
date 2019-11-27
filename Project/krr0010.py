@@ -32,6 +32,103 @@ class Scan:
         self.ipAndOpenPort = {} # Key = ip address, Value = open ports
         self.unique_ports = [] # IP agnostic port list (Null, XMAS)
 
+        self.scan_confirmed = {} # Key = ip address, Value = bool
+    # end __init__
+
+    # TODO: Refactor to method -> ParsePackets(flag_mask)
+    # flag mask for connect   = (dpkt.tcp.TH_SYN | dpkt.tcp.TH_ACK)
+    # flag mask for half open = (dpkt.tcp.TH_SYN | dpkt.tcp.TH_ACK | dpkt.tcp.TH_RST)
+    def ParsePackets(self, flag_mask):
+        # Loop through the packets from the capture
+        for packet in packets:
+            # If the packet contains a SYN flag, take note of the IP
+            if ((packet.flag & flag_mask) != 0):
+                # If the ip is not in the dictionary then add it and the packet
+                if (packet.ip not in self.ipAndPacket):
+                    self.ipAndPacket[packet.ip] = [packet]
+                else: # otherwise just append the packet
+                    self.ipAndPacket[packet.ip].append(packet)
+                # end if
+            # end if
+        # end for
+    # end ParsePackets
+
+    # TODO: Refactor to method -> HeuristicallyCheckForAttacker()
+    # Note: This method requires that parsing has been performed
+    def HeuristicallyCheckForAttacker(self):
+        # Now packets are categorized in a dictionary Key = ip, Value = packets from IP
+        for ip in self.ipAndPacket:
+            # Note the start time of the first packet for this ip
+            startTime = self.ipAndPacket[ip][0].time
+            deltaTime = 0.0
+            ports = 0
+
+            curr_dst_port = self.ipAndPacket[ip][0].dport
+            self.ipAndPort[ip] = [curr_dst_port]
+
+            # Process packets from this ip and try to detect a scan
+            for packet in self.ipAndPacket[ip]:
+                # Calculate the delta time from the last packet
+                if (packet.time - startTime > 0):
+                    deltaTime = packet.time - startTime
+                    if (packet.flag == 2): # SYN Packet
+                        if (packet.dport != curr_dst_port):
+                            ports += 1
+                            if (packet.dport not in self.ipAndPort[ip]):
+                                self.ipAndPort[ip].append(packet.dport)
+                            # end if
+                        # end if
+
+                        # if time difference is within the threshold and number of ports pinged is greater than the threshold
+                        # then this is probably a scan
+                        if (deltaTime < self.time_thresh and ports > self.port_count):
+                            #print("Scan Detected")
+                            if (ip not in self.possible_attacker):
+                                self.possible_attacker.append(ip)
+                            # end if
+                        # Reset the time interval, port count, and the current destination port
+                        elif (deltaTime > self.time_thresh):
+                            startTime = packet.time
+                            deltaTime = 0.0
+                            ports = 0
+                            curr_dst_port = packet.dport
+                        # end if
+                    elif (packet.flag == 18): # SYN-ACK
+                        if (ip not in self.ipAndOpenPort):
+                            self.ipAndOpenPort[ip] = [packet.sport]
+                        elif (packet.sport not in self.ipAndOpenPort[ip]):
+                            self.ipAndOpenPort[ip].append(packet.sport)
+                        #endif
+                    # end if
+                # end if
+            # end for
+        # end for
+    # end HeuristicallyCheckForAttackers
+
+    # TODO: Refactor to method -> [ip] = CheckResponse(response_flag_mask)
+    def ConfirmScanByResponse(response_flag_mask)
+        # Check if any possible attackers tried to send an RST back for a SYN_ACK on any open ports
+        for ip in self.ipAndPacket:
+            for packet in self.ipAndPacket[ip]:
+                if (packet.ip in self.possible_attacker):
+                    if (packet.flag == response_flag_mask): # RST packet
+                        for ip, openPorts in self.ipAndOpenPort.items():
+                            if (packet.dest_ip == ip):
+                                for openPort in openPorts:
+                                    if (packet.dport == openPort):
+                                        #print("Attacker " + str(packet.ip) + ":" + str(packet.sport) + " performed half open scan on " + str(ip) + ":" + str(packet.dport) + "\n")
+                                        self.scan_confirmed[packet.ip] = True
+                                    # end if
+                                # end for
+                            # end if
+                        # end for
+                    # end if
+                # end if
+            # end for
+        # end for
+    # end ConfirmScanByResponse
+# end Scan
+
 class Connect_Scan(Scan):
     def __init__(self, port_count, time_thresh):
         Scan.__init__(self, port_count, time_thresh)
