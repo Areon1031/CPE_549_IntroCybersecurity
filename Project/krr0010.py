@@ -111,21 +111,19 @@ class Scan:
     # The response from the attacker will indicate what type of scan is being performed
     def confirm_scan_by_response(self, response_flag_mask):
         # Check if any possible attackers tried to send a response for a SYN_ACK on any open ports
-        for ip in self.ip_and_packet:
+        for ip in self.possible_attacker:
             for packet in self.ip_and_packet[ip]:
-                if (packet.ip in self.possible_attacker):
-                    if (packet.flag == response_flag_mask):
-                        for ip, openPorts in self.ip_and_open_port.items():
-                            if (packet.dest_ip == ip):
-                                for openPort in openPorts:
-                                    if (packet.dport == openPort):
-                                        #print("Attacker " + str(packet.ip) + ":" + str(packet.sport) + " performed half open scan on " + str(ip) + ":" + str(packet.dport) + "\n")
-                                        self.scan_confirmed[packet.ip] = True
-                                    # end if
-                                # end for
-                            # end if
-                        # end for
-                    # end if
+                if (packet.flag == response_flag_mask):
+                    for dst_ip, openPorts in self.ip_and_open_port.items():
+                        if (packet.dest_ip == dst_ip):
+                            for openPort in openPorts:
+                                if (packet.dport == openPort):
+                                    self.scan_confirmed[packet.ip] = True
+                                    break
+                                # end if
+                            # end for
+                        # end if
+                    # end for
                 # end if
             # end for
         # end for
