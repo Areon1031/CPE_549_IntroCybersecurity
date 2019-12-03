@@ -139,7 +139,7 @@ class Connect_Scan(Scan):
     # Read the packets and categorize any packets with SYN flag sent
     def process(self, packets):
         # Parse the packets looking for SYN, SYN-ACK, or ACK packets
-        self.parse_packets(packets, dpkt.tcp.TCP, (dpkt.tcp.TH_SYN | dpkt.tcp.TH_ACK))
+        self.parse_packets(packets, dpkt.tcp.TCP, (dpkt.tcp.TH_SYN | dpkt.tcp.TH_ACK | dpkt.tcp.TH_RST))
 
         # Check if any packet communication follows scan heuristic
         self.check_for_attackers(dpkt.tcp.TCP)
