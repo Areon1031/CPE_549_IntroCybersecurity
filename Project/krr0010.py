@@ -156,13 +156,16 @@ class Connect_Scan(Scan):
     def to_string(self):
         out = "Connect: "
         if (len(self.scan_confirmed) > 0):
+            total_ports = 0
             for attacker in self.scan_confirmed:
-                out += str(attacker) + " scanned " + str(len(self.ip_and_port[attacker])) + " port(s)"
+                total_ports += len(self.ip_and_port[attacker])
+            # end for
+            out += str(total_ports)
             #for ip, openPorts in self.ipAndOpenPort.items():
             #    for openPort in openPorts:
             #        out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
         else:
-            out += "0 unique port(s)"
+            out += "0"
         # end if
         return out
     # end to_string
@@ -188,13 +191,16 @@ class Half_Open_Scan(Scan):
     def to_string(self):
         out = "Half-open: "
         if (len(self.scan_confirmed) > 0):
+            total_ports = 0
             for attacker in self.scan_confirmed:
-                out += str(attacker) + " scanned " + str(len(self.ip_and_port[attacker])) + " port(s)"
+                total_ports += len(self.ip_and_port[attacker])
+            # end for
+            out += str(total_ports)
             #for ip, openPorts in self.ipAndOpenPort.items():
             #    for openPort in openPorts:
             #        out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
         else:
-            out += "0 unique port(s)"
+            out += "0"
         # end if
         return out
     # end to_string
@@ -219,10 +225,13 @@ class Null_Scan(Scan):
     def to_string(self):
         out = "Null: "
         if (len(self.ip_and_port) > 0):
+            total_ports = 0
             for attacker in self.ip_and_port:
-                out += str(attacker) + " scanned " + str(len(self.ip_and_port[attacker])) + " unique port(s)"
+                total_ports += len(self.ip_and_port[attacker])
+            # end for
+            out += str(total_ports)
         else:
-            out += "0 unique port(s)"
+            out += "0"
         # end if
         return out
     # end to_string
@@ -253,10 +262,13 @@ class XMAS_Scan(Scan):
     def to_string(self):
         out = "XMAS: "
         if (len(self.ip_and_port) > 0):
+            total_ports = 0
             for attacker in self.ip_and_port:
-                out += str(attacker) + " scanned " + str(len(self.ip_and_port[attacker])) + " unique port(s)"
+                total_ports += len(self.ip_and_port[attacker])
+            # end for
+            out += str(total_ports)
         else:
-            out += "0 unique port(s)"
+            out += "0"
         # end if
         return out
     # end to_string
@@ -280,10 +292,12 @@ class UDP_Scan(Scan):
     def to_string(self):
         out = "UDP: "
         if (len(self.possible_attacker) > 0):
+            total_ports = 0
             for attacker in self.possible_attacker:
-                out += str(attacker) + " scanned " + str(len(self.ip_and_port[attacker])) + " port(s)"
+                total_ports += len(self.ip_and_port[attacker])
+            out += str(total_ports)
         else:
-            out += "0 unique port(s)"
+            out += "0"
         # end if
         return out
     # end to_string
@@ -292,7 +306,7 @@ class UDP_Scan(Scan):
 
 # Scan Heuristics
 num_ports_for_trigger = 10  # 10 ports within time thresh to trigger
-time_thresh_for_trigger = 0.1 # 0.1 seconds is time threshold to trigger 
+time_thresh_for_trigger = 100 # 0.1 seconds is time threshold to trigger 
 
 class Scan_Detector:
     def __init__(self):
