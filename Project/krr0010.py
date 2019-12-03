@@ -111,14 +111,19 @@ class Scan:
     # The response from the attacker will indicate what type of scan is being performed
     def confirm_scan_by_response(self, response_flag_mask):
         # Check if any possible attackers tried to send a response for a SYN_ACK on any open ports
+        # Check only the first response, not any repeated or duplicate packets
         for ip in self.possible_attacker:
+            open_ports_to_check = self.ip_and_open_port
             for packet in self.ip_and_packet[ip]:
-                if (packet.flag == response_flag_mask):
-                    for dst_ip, openPorts in self.ip_and_open_port.items():
+                if (packet.flag == 4 or packet.flag == 16): # RST or ACK response
+                    for dst_ip, openPorts in open_ports_to_check.items():
                         if (packet.dest_ip == dst_ip):
                             for openPort in openPorts:
                                 if (packet.dport == openPort):
-                                    self.scan_confirmed[packet.ip] = True
+                                    openPorts.remove(openPort)
+                                    if (packet.flag == response_flag_mask):
+                                        self.scan_confirmed[packet.ip] = True
+                                    # end if
                                     break
                                 # end if
                             # end for
