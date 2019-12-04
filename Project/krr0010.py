@@ -123,7 +123,6 @@ class Scan:
                                 if (packet.dport == openPort):
                                     openPorts.remove(openPort)
                                     if (packet.flag == response_flag_mask):
-                                        #print("Response flag = " + str(packet.flag))
                                         self.scan_confirmed[packet.ip] = True
                                     # end if
                                     break
@@ -163,9 +162,9 @@ class Connect_Scan(Scan):
                 total_ports += len(self.ip_and_port[attacker])
             # end for
             out += str(total_ports)
-            for ip, openPorts in self.ip_and_open_port.items():
-               for openPort in openPorts:
-                   out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
+            # for ip, openPorts in self.ip_and_open_port.items():
+            #    for openPort in openPorts:
+            #        out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
         else:
             out += "0"
         # end if
@@ -198,9 +197,9 @@ class Half_Open_Scan(Scan):
                 total_ports += len(self.ip_and_port[attacker])
             # end for
             out += str(total_ports)
-            for ip, openPorts in self.ip_and_open_port.items():
-               for openPort in openPorts:
-                   out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
+            # for ip, openPorts in self.ip_and_open_port.items():
+            #    for openPort in openPorts:
+            #        out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
         else:
             out += "0"
         # end if
@@ -329,8 +328,6 @@ class Scan_Detector:
         # Open and process the packet capture file
         if (not pcap_file):
             print("Invalid file, please provide a packet capture file (.pcap) for processing.")
-        else:
-            print("Opening wireshark file " + pcap_file + "\n")
         # end if
 
         try:
@@ -363,9 +360,10 @@ class Scan_Detector:
                     tcp_packet_cnt += 1
                 elif (isinstance(ip.data, dpkt.udp.UDP)):
                     udp = ip.data
-                    self.udp_packets.append(PacketInfo(socket.inet_ntoa(ip.src), socket.inet_ntoa(ip.dst), udp.sport, udp.dport))
-                    self.udp_packets[udp_packet_cnt].time = ts
-                    udp_packet_cnt += 1
+                    if (len(udp) == 8):
+                        self.udp_packets.append(PacketInfo(socket.inet_ntoa(ip.src), socket.inet_ntoa(ip.dst), udp.sport, udp.dport))
+                        self.udp_packets[udp_packet_cnt].time = ts
+                        udp_packet_cnt += 1
                     # end if
                 # end if
             #end if
@@ -385,8 +383,8 @@ class Scan_Detector:
         print(self.udp_scan.to_string())
         print(self.half_open_scan.to_string())
         print(self.connect_scan.to_string())
-        print("\nNumber of TCP packets: " + str(len(self.tcp_packets)))
-        print("Number of UDP packets: " + str(len(self.udp_packets)))
+        # print("\nNumber of TCP packets: " + str(len(self.tcp_packets)))
+        # print("Number of UDP packets: " + str(len(self.udp_packets)))
     # end print_results
 
 def main():
