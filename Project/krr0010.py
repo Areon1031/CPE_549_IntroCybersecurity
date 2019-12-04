@@ -6,6 +6,7 @@
 import dpkt
 import socket
 import sys
+import copy
 
 # Packet Informations
 class PacketInfo:
@@ -113,7 +114,7 @@ class Scan:
         # Check if any possible attackers tried to send a response for a SYN_ACK on any open ports
         # Check only the first response, not any repeated or duplicate packets
         for ip in self.possible_attacker:
-            open_ports_to_check = self.ip_and_open_port
+            open_ports_to_check = copy.deepcopy(self.ip_and_open_port)
             for packet in self.ip_and_packet[ip]:
                 if (packet.flag == 4 or packet.flag == 16): # RST or ACK response
                     for dst_ip, openPorts in open_ports_to_check.items():
@@ -122,6 +123,7 @@ class Scan:
                                 if (packet.dport == openPort):
                                     openPorts.remove(openPort)
                                     if (packet.flag == response_flag_mask):
+                                        #print("Response flag = " + str(packet.flag))
                                         self.scan_confirmed[packet.ip] = True
                                     # end if
                                     break
@@ -161,9 +163,9 @@ class Connect_Scan(Scan):
                 total_ports += len(self.ip_and_port[attacker])
             # end for
             out += str(total_ports)
-            #for ip, openPorts in self.ipAndOpenPort.items():
-            #    for openPort in openPorts:
-            #        out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
+            for ip, openPorts in self.ip_and_open_port.items():
+               for openPort in openPorts:
+                   out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
         else:
             out += "0"
         # end if
@@ -196,9 +198,9 @@ class Half_Open_Scan(Scan):
                 total_ports += len(self.ip_and_port[attacker])
             # end for
             out += str(total_ports)
-            #for ip, openPorts in self.ipAndOpenPort.items():
-            #    for openPort in openPorts:
-            #        out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
+            for ip, openPorts in self.ip_and_open_port.items():
+               for openPort in openPorts:
+                   out += "\t" + "Open Port: " + str(ip) + ":" + str(openPort) + "\n"
         else:
             out += "0"
         # end if
