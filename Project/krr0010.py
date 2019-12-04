@@ -29,7 +29,7 @@ class Scan:
 
         # IP Collections
         self.ip_and_packet = {} # Key = ip address, Value = PacketInfo
-        self.ip_and_port = {} # Key = ip address, Value = unique ports
+        self.ip_and_port = {} # Key = ip address, Value = list of dst_ip:unique port
         self.ip_and_open_port = {} # Key = ip address, Value = open ports
         self.unique_ports = [] # IP agnostic port list (Null, XMAS)
 
@@ -66,7 +66,8 @@ class Scan:
             delta_time = 0.0
             ports = 0
 
-            curr_dst_port = self.ip_and_packet[ip][0].dport
+            # Store as dest_ip:dest_port
+            curr_dst_port = str(self.ip_and_packet[ip][0].dest_ip) + ":" + str(self.ip_and_packet[ip][0].dport)
             self.ip_and_port[ip] = [curr_dst_port]
 
             # Process packets from this ip and try to detect a scan
@@ -75,10 +76,11 @@ class Scan:
                 if (packet.time - start_time > 0):
                     delta_time = packet.time - start_time
                     if ((protocol == dpkt.udp.UDP) or (protocol == dpkt.tcp.TCP and packet.flag == 2)): # SYN Packet
-                        if (packet.dport != curr_dst_port):
+                        unique_dest = str(packet.dest_ip) + ":" + str(packet.dport)
+                        if (unique_dest != curr_dst_port):
                             ports += 1
-                            if (packet.dport not in self.ip_and_port[ip]):
-                                self.ip_and_port[ip].append(packet.dport)
+                            if (unique_dest not in self.ip_and_port[ip]):
+                                self.ip_and_port[ip].append(unique_dest)
                             # end if
                         # end if
 
@@ -214,10 +216,11 @@ class Null_Scan(Scan):
     def process(self, packets):
         for packet in packets:
             if (packet.flag == 0):
+                unique_dest = str(packet.dest_ip) + ":" + str(packet.dport)
                 if (packet.ip not in self.ip_and_port):
-                    self.ip_and_port[packet.ip] = [packet.dport]
-                elif (packet.dport not in self.ip_and_port[packet.ip]):
-                    self.ip_and_port[packet.ip].append(packet.dport)
+                    self.ip_and_port[packet.ip] = [unique_dest]
+                elif (unique_dest not in self.ip_and_port[packet.ip]):
+                    self.ip_and_port[packet.ip].append(unique_dest)
                 # end if
             # end if
         # end for
@@ -251,10 +254,11 @@ class XMAS_Scan(Scan):
         for packet in packets:
             if (packet.flag == 41):
                 # Illegal packet
+                unique_dest = str(packet.dest_ip) + ":" + str(packet.dport)
                 if (packet.ip not in self.ip_and_port):
-                    self.ip_and_port[packet.ip] = [packet.dport]
-                elif (packet.dport not in self.ip_and_port[packet.ip]):
-                    self.ip_and_port[packet.ip].append(packet.dport)
+                    self.ip_and_port[packet.ip] = [unique_dest]
+                elif (unique_dest not in self.ip_and_port[packet.ip]):
+                    self.ip_and_port[packet.ip].append(unique_dest)
                 # end if
             # end if
         # end for
@@ -360,7 +364,7 @@ class Scan_Detector:
                     tcp_packet_cnt += 1
                 elif (isinstance(ip.data, dpkt.udp.UDP)):
                     udp = ip.data
-                    if (len(udp) == 8):
+                    if (len(udp) == 8): # only care about empty udp packets (8 header bytes only)
                         self.udp_packets.append(PacketInfo(socket.inet_ntoa(ip.src), socket.inet_ntoa(ip.dst), udp.sport, udp.dport))
                         self.udp_packets[udp_packet_cnt].time = ts
                         udp_packet_cnt += 1
